@@ -85,20 +85,21 @@ def mean_average_precision(pred_boxes, true_boxes, iou_threshold=0.5, box_format
         amount_bboxes = Counter([gt[0] for gt in ground_truths])
 
         for key, val in amount_bboxes.items():
-            amount_bboxes[key] = torch.zeros(val)
+            amount_bboxes[key] = torch.zeros(val)   #amount_boxes = {0:torch.tensor([0,0,0}), 1:torch.tensor([0,0,0,0,0])}
+                                                    #When we iterate through the detected boxes in the order of the highest probablity among the detections
+                                                    #for that ground truth boxes, if "0:torch.tensor([0,1,0}", that means the box 2, of the image 0, has the highest
+                                                    #prediction for that class in that image. So other images should be discarded depending on the IOU.
 
         detections.sort(key=lambda x: x[2], reverse=True)
         TP = torch.zeros((len(detections)))
         FP = torch.zeros((len(detections)))
         total_true_bboxes = len(ground_truths)
         
-        # If none exists for this class then we can safely skip
         if total_true_bboxes == 0:
             continue
 
         for detection_idx, detection in enumerate(detections):
-            # Only take out the ground_truths that have the same
-            # training idx as detection
+            # Only take out the ground_truths that came from the same training image
             ground_truth_img = [
                 bbox for bbox in ground_truths if bbox[0] == detection[0]
             ]
