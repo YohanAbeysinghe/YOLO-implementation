@@ -28,7 +28,7 @@ torch.manual_seed(seed)
 
 # Hyperparameters etc. 
 LEARNING_RATE = 2e-5
-DEVICE = "cuda" if torch.cuda.is_available else "cpu"
+DEVICE = "metal"
 BATCH_SIZE = 16 # 64 in original paper but I don't have that much vram, grad accum?
 WEIGHT_DECAY = 0
 EPOCHS = 1000
@@ -84,14 +84,14 @@ def main():
         load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
     train_dataset = VOCDataset(
-        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/dataset/100examples.csv",
+        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/data/100examples.csv",
         transform=transform,
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
 
     test_dataset = VOCDataset(
-        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/dataset/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
+        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/data/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
     )
 
     train_loader = DataLoader(
