@@ -1,4 +1,8 @@
+
 import torch
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from collections import Counter
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
@@ -146,6 +150,39 @@ def mean_average_precision(pred_boxes, true_boxes, iou_threshold=0.5, box_format
 
 
 
+def plot_image(image, boxes):
+    """Plots predicted bounding boxes on the image"""
+    im = np.array(image)
+    height, width, _ = im.shape
+
+    # Create figure and axes
+    fig, ax = plt.subplots(1)
+    # Display the image
+    ax.imshow(im)
+
+    # box[0] is x midpoint, box[2] is width
+    # box[1] is y midpoint, box[3] is height
+
+    # Create a Rectangle potch
+    for box in boxes:
+        box = box[2:]
+        assert len(box) == 4, "Got more values than in x, y, w, h, in a box!"
+        upper_left_x = box[0] - box[2] / 2
+        upper_left_y = box[1] - box[3] / 2
+        rect = patches.Rectangle(
+            (upper_left_x * width, upper_left_y * height),
+            box[2] * width,
+            box[3] * height,
+            linewidth=1,
+            edgecolor="r",
+            facecolor="none",
+        )
+        # Add the patch to the Axes
+        ax.add_patch(rect)
+
+    plt.show()
+
+
 
 def get_bboxes(loader, model, iou_threshold, threshold, pred_format="cells", box_format="midpoint", device="cuda"):
     all_pred_boxes = []
@@ -187,8 +224,6 @@ def get_bboxes(loader, model, iou_threshold, threshold, pred_format="cells", box
 
 
 
-
-
 def convert_cellboxes(predictions, S=7):
     predictions = predictions.to("cpu")
     batch_size = predictions.shape[0]
@@ -217,9 +252,6 @@ def convert_cellboxes(predictions, S=7):
 
 
 
-
-
-
 def cellboxes_to_boxes(out, S=7):
     converted_pred = convert_cellboxes(out).reshape(out.shape[0], S * S, -1)
     converted_pred[..., 0] = converted_pred[..., 0].long()
@@ -233,3 +265,15 @@ def cellboxes_to_boxes(out, S=7):
         all_bboxes.append(bboxes)
 
     return all_bboxes
+
+
+
+def save_checkpoint(state, filename="my_checkpoint.pth.tar"):
+    print("=> Saving checkpoint")
+    torch.save(state, filename)
+
+
+def load_checkpoint(checkpoint, model, optimizer):
+    print("=> Loading checkpoint")
+    model.load_state_dict(checkpoint["state_dict"])
+    optimizer.load_state_dict(checkpoint["optimizer"]) 
