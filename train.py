@@ -84,14 +84,14 @@ def main():
         load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
     train_dataset = VOCDataset(
-        "/Users/yohanabeysinghe/Mac/0. ML/Datasets/PascalVOC YOLO/100examples.csv",
+        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/dataset/100examples.csv",
         transform=transform,
         img_dir=IMG_DIR,
         label_dir=LABEL_DIR,
     )
 
     test_dataset = VOCDataset(
-        "/Users/yohanabeysinghe/Mac/0. ML/Datasets/PascalVOC YOLO/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
+        "/Users/yohanabeysinghe/Mac/Codes/ML/Projects/Yolo-implementation/dataset/test.csv", transform=transform, img_dir=IMG_DIR, label_dir=LABEL_DIR,
     )
 
     train_loader = DataLoader(
